@@ -4,6 +4,7 @@ import ("errors"
 		"sync"
 		)
 
+var ErrHandlerAlreadyRegistered = errors.New("handler already registered")
 
 type EventDispatcher struct{
 	handlers map[string][]EventHandlerInterface
@@ -24,11 +25,16 @@ func (ed *EventDispatcher) Register(eventName string, handler EventHandlerInterf
 	if _, ok := ed.handlers[eventName]; ok{
 		for _, h := range ed.handlers[eventName]{
 			if h == handler{
-				return errors.New("handler already registered")
+				return ErrHandlerAlreadyRegistered
 			}
 		}
 	}
 
 	ed.handlers[eventName] = append(ed.handlers[eventName], handler)
 	return nil
+}
+
+func (ed *EventDispatcher) Clear(){
+	ed.handlers = make(map[string][]EventHandlerInterface)
+	
 }
